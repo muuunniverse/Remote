@@ -1,33 +1,40 @@
 <?php
-$response = "; // Inisialisasi variabel untuk response
+$response = ""; // Inisialisasi variabel untuk response
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['url_input'])) {$api_key = '523824pmk6dwbdwu8kr9am'; // API Key Anda
-$url_input = $_POST['url_input']; // Mendapatkan URL input dari form
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['url_input'])) {
+    $api_key = '523824pmk6dwbdwu8kr9am'; // API Key Anda
+    $url_input = $_POST['url_input']; // Mendapatkan URL input dari form
 
-// Membuat URL API dengan menggabungkan API Key dan URL input $url = "https://doodapi.com/api/upload/url?key=$api_key&url=$url_input";
+    // Validasi URL (opsional tapi disarankan)
+    if (filter_var($url_input, FILTER_VALIDATE_URL)) {
+        // Membuat URL API dengan menggabungkan API Key dan URL input
+        $url = "https://doodapi.com/api/upload/url?key=$api_key&url=$url_input";
 
-$curl = curl_init();
+        $curl = curl_init();
 
-curl_setopt_array($curl, array(
-CURLOPT_URL => $url, // Menggunakan URL yang benar
-CURLOPT_RETURNTRANSFER => true,
-CURLOPT_ENCODING => ",
-CURLOPT_MAXREDIRS => 10,
-CURLOPT_TIMEOUT => 0,
-CURLOPT_FOLLOWLOCATION => true,
-CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-CURLOPT_CUSTOMREQUEST => 'GET',
-));
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url, // Menggunakan URL yang benar
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "", // Sudah benar
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
 
-// Eksekusi cURL dan simpan response
-$response = curl_exec($curl);
+        // Eksekusi cURL dan simpan response
+        $response = curl_exec($curl);
 
-// Jika terjadi kesalahan, ambil pesan error CURL
-if ($response === false) {
-$error_message = curl_error($curl); // Ambil pesan error
-$response = "Terjadi kesalahan saat menghubungi API: $error_message"; // Tampilkan error
-}
+        // Jika terjadi kesalahan, ambil pesan error CURL
+        if ($response === false) {
+            $error_message = curl_error($curl); // Ambil pesan error
+            $response = "Terjadi kesalahan saat menghubungi API: $error_message"; // Tampilkan error
+        }
 
-curl_close($curl); // Tutup cURL session
+        curl_close($curl); // Tutup cURL session
+    } else {
+        $response = "URL tidak valid!";
+    }
 }
 ?>
